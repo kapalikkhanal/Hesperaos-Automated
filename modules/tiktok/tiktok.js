@@ -38,7 +38,7 @@ async function getCookies(url, application_name) {
     try {
         // Launch the browser in non-headless mode
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             args: [
                 '--start-maximized',
                 '--no-sandbox',
@@ -73,6 +73,7 @@ async function PostToTiktok(filePath) {
     try {
         const browser = await puppeteer.launch({
             headless: false,
+            // executablePath: '/usr/bin/chromium-browser',
             args: [
                 '--start-maximized',
                 '--no-sandbox',
@@ -92,8 +93,7 @@ async function PostToTiktok(filePath) {
         console.log('Injected.')
 
         await page.goto('https://www.tiktok.com/tiktokstudio/upload?from=upload', {
-            waitUntil: 'networkidle2',
-            timeout: 60000
+            waitUntil: 'networkidle2'
         });
 
         const inputFile = await page.waitForSelector('input[type="file"]', {
@@ -167,23 +167,13 @@ async function PostToTiktok(filePath) {
 
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        const caption = `Follow for more motivation and quotes. \n \n`;
-        const hashtags ='#motivation #inspiration #success #love #lovequotes #success #entrepreneur #goals #couplegoals #loveyourself #relationshipgoals';
-        const hashtagList = hashtags.split(' ');
+        const caption = `Follow for more content like these.`;
 
         // Type message with human-like delays
         await page.evaluate((text) => navigator.clipboard.writeText(text), caption);
         await page.keyboard.down('Control');
         await page.keyboard.press('V');
         await page.keyboard.up('Control');
-
-        for (const hashtag of hashtagList) {
-            for (const char of hashtag) {
-                await page.keyboard.type(char, { delay: 100 + Math.floor(Math.random() * 100) });
-            }
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            await page.keyboard.press('Tab');
-        }
 
         await new Promise(resolve => setTimeout(resolve, 500));
         await page.keyboard.press('Enter');
